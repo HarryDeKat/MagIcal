@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Zet je Magister rooster om in een iCalendar voor gebruik in andere agenda's.">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.min.js" integrity="sha384-ODmDIVzN+pFdexxHEHFBQH3/9/vQ9uori45z4JjnFsRydbmQbmL5t1tQ0culUzyK" crossorigin="anonymous"></script>
+  <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous"> -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-dark-5@1.1.3/dist/css/bootstrap-dark.min.css" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jsencrypt/2.3.1/jsencrypt.min.js" integrity="sha512-zDvrqenA0eFJZCxBsryzUZcvihvNlEXbteMv62yRxdhR4s7K1aaz+LjsRyfk6M+YJLyAJEuuquIAI8I8GgLC8A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js" integrity="sha512-aVKKRRi/Q/YV+4mjoKBsE4x3H+BkegoM/em46NNlCqNTmUYADjBbeNefNxYV7giUp0VxICtqdrbqU7iVaeZNXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="/script/homepage.js" defer></script>
+  <script src="/publickey.js" defer></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+  <title>Magister naar iCalendar</title>
+</head>
+
+<body class="ms-3 me-3">
+  <h1 style="text-align: center;" class="mb-5 mt-5">Magister → iCalendar</h1>
+  <div id="info"></div>
+  <div class="input-group mb-3">
+    <span class="input-group-text material-symbols-outlined" id="basic-addon1">school</span>
+    <input type="text" class="form-control" id="tenant" placeholder="School" aria-label="School" aria-describedby="basic-addon2">
+    <span class="input-group-text" id="basic-addon2">.magister.net</span>
+  </div>
+  <div class="input-group mb-3">
+    <span class="input-group-text material-symbols-outlined" id="basic-addon1">account_circle</span>
+    <input type="text" class="form-control" id="username" placeholder="Gebruikersnaam" aria-label="Gebruikersnaam" aria-describedby="basic-addon2">
+  </div>
+  <div class="input-group mb-4">
+    <span class="input-group-text material-symbols-outlined" id="basic-addon1">lock</span>
+    <input type="password" class="form-control" id="password" placeholder="Wachtwoord" aria-label="Wachtwoord" aria-describedby="basic-addon2">
+  </div>
+  <div class="input-group mb-3">
+    <span class="input-group-text" id="basic-addon1">Extra weken vooruit</span>
+    <input type="number" class="form-control" id="awv" placeholder="1" value="1" aria-label="Extra weken vooruit" aria-describedby="basic-addon2">
+  </div>
+  <div class="input-group mb-4">
+    <span class="input-group-text" id="basic-addon1">Extra weken achteruit</span>
+    <input type="number" class="form-control" id="awa" placeholder="0" value="0" aria-label="Extra weken achteruit" aria-describedby="basic-addon2">
+  </div>
+  <div class="d-grid gap-2 mb-5">
+    <button class="btn btn-primary" onclick="CreateLink()" type="button">Genereer link</button>
+  </div>
+  <div class="input-group mb-3">
+    <span style="display: flex;align-items: center;min-width: 50px;justify-content: center;" id="checkicon" class="input-group-text material-symbols-outlined" id="basic-addon1">
+      link
+    </span>
+    <input id="link" type="text" class="form-control" style="min-width: 25%;" placeholder="Gegenereerde link" aria-label="Gegenereerde link" aria-describedby="button-addon2" disabled>
+    <button style="display: none;align-items: center;padding: 0;" class="btn btn-outline-secondary" onclick="" type="button" id="persoonlijkeaanpassingbutton">
+      <span style="background: transparent;border: none;color: inherit;" id="checkicon" class="input-group-text material-symbols-outlined">edit_calendar</span>
+    </button>
+    <button style="display: flex;align-items: center;padding: 0;" class="btn btn-outline-secondary" onclick="Copy()" type="button" id="button-addon3">
+      <span style="background: transparent;border: none;color: inherit;" id="checkicon" class="input-group-text material-symbols-outlined">content_copy</span>
+    </button>
+    <button style="display: flex;align-items: center;padding: 0;" class="btn btn-outline-secondary" onclick="if (document.getElementById('link').value != '') window.open(document.getElementById('link').value);" type="button" id="button-addon4">
+      <span style="background: transparent;border: none;color: inherit;" id="checkicon" class="input-group-text material-symbols-outlined">open_in_new</span>
+    </button>
+  </div>
+  <div class="accordion mb-3" id="accordionExample">
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="headingOne">
+        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+          Wat is dit?
+        </button>
+      </h2>
+      <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+        <div class="accordion-body">
+          Dit is een tool om het rooster van Magister op te halen en op te zetten in een iCalendar. Magister heeft hier ook <a href="https://www.magister.nl/help/agenda-delen/">zelf ondersteuning voor</a>, maar deze integratie mist veel functies en is soms niet eens beschikbaar. Met deze tool is het mogelijk om je Magister agenda net als de integratie van Magister te exporteren naar andere kalenders, maar dan met extra functies.
+        </div>
+      </div>
+    </div>
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="headingTwo">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+          Welke functies kan je allemaal instellen?
+        </button>
+      </h2>
+      <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+        <div class="accordion-body">
+          <h5>Zichtbaarheid van verschillende evenementen</h5>
+          <ul>
+            <li>Laat evenementen met huiswerk zien</li>
+            <li>Laat evenementen met toetsen zien</li>
+            <li>Laat afgeronde evenementen zien</li>
+            <li>Laat vervallen evenementen zien</li>
+            <li>Laat gewone evenementen zien</li>
+            <li>Laat de inleverdatum van opdrachten zien</li>
+            <li>Laat absenties zien</li>
+          </ul>
+          <h5>Vooruit plannen</h5>
+          <p>Het is mogelijk om nog vier weken verder in het rooster te kijken, om geplande toetsen te vinden en in te plannen.</p>
+          <h5>Persoonlijke aanpassingen <span class="badge rounded-pill bg-primary">Beta</span></h5>
+          <p>Het is mogelijk om persoonlijke aanpassingen te maken aan het rooster die alleen zichtbaar voor jou zijn. Dit betekent dat als een leraar huiswerk niet in Magister zet, je het zelf kan toevoegen, zodat je het niet vergeet. Dit is een functie die Magister niet uit zichzelf ondersteund, dus om aanpassingen te maken moeten de opties &lsquo;Aanpassen link&rsquo; en &lsquo;HTML descriptie&rsquo; aan staan. De aanpassingen worden opgeslagen als aantekening onder het aangepaste Magister evenement. Mocht het evenement later door Magister nog worden aangepast, zullen die veranderingen leiden en zal jouw persoonlijke aanpassing alleen nog maar zichtbaar zijn in de descriptie onder ‘Oude aangepaste informatie’. Uiteraard is het mogelijk om daarna jouw persoonlijke aanpassing opnieuw in te voeren.</p>
+          <h5>Afronden van huiswerk/toetsen</h5>
+          <p>Het is mogelijk om huiswerk/toetsen af te ronden zodat je met een oogopslag kan zien of je klaar bent of dat je nog ergens aan moet werken. Dit is een functie die Magister uit zichzelf ondersteund, dus zal het huiswerk ook als &lsquo;afgerond&rsquo; in magister worden genoteerd. De link om het huiswerk af te ronden zonder de Magister app te gebruiken is alleen zichtbaar wanneer de optie &lsquo;HTML descriptie&rsquo; wordt gebruikt.</p>
+          <h5>Gepersonaliseerde evenement titel</h5>
+          <p>Het is mogelijk om de titel van je evenementen te personaliseren van gewoon de naam van het vak tot een combinatie van het lesuur, locatie, lesnummer en de naam van docent. Het is ook mogelijk om de roepnaam erachter te zetten, hierdoor is het mogelijk om je eigen rooster en die van een ander uit elkaar te houden. Informatie over hoe dit is aan te passen is te vinden in &lsquo;Gepersonaliseerde evenement titel&rsquo;.</p>
+          <h5>Aangepast Google script</h5>
+          <p>Hoewel gebruik hiervan niet nodig is wordt het wel aangeraden. Met <a href="https://script.google.com/d/1WkbpHQxsMbbFqYjrL1xKkhfaRf3gs8nsCoRewj_GEn9rTdoPc0H7xHxi/edit?usp=sharing">dit aangepaste script</a> is het mogelijk om je Magister Agenda op te halen om een zelf gezette periode, daardoor is de kans kleiner dat je rooster wijzigingen mist. Ook voegt dit script de juiste kleuren toe voor verschillende evenementen. Blauw voor huiswerk, donkerblauw voor een toets, rood voor uitval en uiteraard groen voor een afgerond evenement.</p>
+          <h5>Magister berichten doorsturen <span class="badge rounded-pill bg-primary">Beta</span></h5>
+          <p>Het is mogelijk om Magister berichten door te sturen naar je eigen email adres. Magister had hier ooit ondersteuning voor, maar heeft deze optie vervangen door een dommere versie die je alleen vertelt dat je een bericht hebt. Deze optie wordt niet aangeraden, omdat de doorgestuurde berichten worden verzonden door middel van ‘Naver’, een Koreaanse email service. Hoewel de instellingen zijn aangepast om berichten niet op te slaan op de servers van Naver is dat niet te controleren. Het is dus mogelijk dat privé berichten worden opgeslagen op servers die niet van Magister zijn. Het is niet mogelijk om hier een emailadres in te vullen om misbruik van deze functionaliteit te voorkomen, in de plaats daarvan wordt het ingevulde emailadres uit Magister gebruikt. Ook wordt het Magister bericht als 'Gelezen' gemarkeerd in Magister, zodat er geen dubbele e-mails worden verzonden.</p>
+          <h5>Herinneringen</h5>
+          <p>Het is mogelijk om een of meer herinneringen in te stellen zodat je geen lessen mist. Herinneringen kunnen worden aangepast onder ‘Geavanceerde opties’.</p>
+        </div>
+      </div>
+    </div>
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="headingThree">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+          FAQ
+        </button>
+      </h2>
+      <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
+        <div class="accordion-body">
+          <h5>Wat is een &lsquo;auth token&rsquo;?</h5>
+          <p>De &lsquo;auth token&rsquo; wordt gemaakt door deze website en bevat jouw school Magister inlog gegevens. Deze informatie word met een &lsquo;<a href="https://nl.wikipedia.org/wiki/Publieke_sleutel">public key</a>&rsquo; versleuteld en kan alleen worden gelezen door middel van een &lsquo;<a href="https://nl.wikipedia.org/wiki/Geheime_sleutel">private key</a>&rsquo; die niet zichtbaar is. Hierdoor kunnen jouw Magister inloggegevens nooit uitlekken, als de link wordt uitgelekt.</p>
+          <h5>Mijn link is uitgelekt!</h5>
+          <p>Geen paniek je Magister inlog gegevens zijn niet leesbaar, maar het is wel mogelijk om je rooster op te halen en als je dat had ingesteld huiswerk af te ronden of persoonlijke aanpassingen te maken. Als je liever niet hebt dat anderen dit kunnen doen, kan je er voor kiezen om je <a href="https://www.magister.nl/wp-content/uploads/2022/06/Gebruiker-wachtwoord-zelf-herstellen.pdf">Magister wachtwoord te veranderen.</a></p>
+          <h5>De link werkt niet in Google/Apple Calendar</h5>
+          <p>De gegeneerde link zal hoogstwaarschijnlijk over 255 karakters zijn, dit betekent dat Google of Apple hem niet accepteert. Dit is op te lossen door of <a href="https://script.google.com/d/1WkbpHQxsMbbFqYjrL1xKkhfaRf3gs8nsCoRewj_GEn9rTdoPc0H7xHxi/edit?usp=sharing">het aangepaste Google script</a> te gebruiken of door de link korter te maken met een &lsquo;link shortening service&rsquo; zoals <a href="https://bit.ly">Bit.ly</a></p>
+          <h5>Wordt er data opgeslagen buiten de servers van Magister?</h5>
+          <p>Nee, deze applicatie slaat bij normale instellingen geen gegevens op buiten de servers van Magister. Echter als de optie ‘berichten doorsturen’ aanstaat kan het zijn dat berichten buiten de servers van Magister worden opgeslagen, daardoor staat deze optie standaard uit en wordt het aangeraden deze niet aan te gebruiken. Voor meer informatie hierover zie ‘Magister berichten doorsturen’.</p>
+        </div>
+      </div>
+    </div>
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="headingFour">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+          Gepersonaliseerde evenement titel
+        </button>
+      </h2>
+      <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#accordionExample">
+        <div class="accordion-body">
+          Stel je gepersonaliseerde evenement titel in door in de onderstaande tekstbalk je gewilde titel op te schrijven met termen zoals '<code>${Vaknaam}</code>' op plaatsen waar je de naam van het vak wilt hebben. Het is mogelijk om al deze termen te gebruiken:
+          <table class="mt-2 table table-bordered table-striped">
+            <thead>
+              <tr>
+                <th scope="col">Term</th>
+                <th scope="col">Voorbeeld uitkomst</th>
+              </tr>
+            </thead>
+            <tbody class="table-group-divider">
+              <tr>
+                <td>${Vaknaam}</th>
+                <td>Duits</td>
+              </tr>
+              <tr>
+                <td>${Locatie}</th>
+                <td>102</td>
+              </tr>
+              <tr>
+                <td>${Docent}</th>
+                <td>Heydrich</td>
+              </tr>
+              <tr>
+                <td>${DocentKort}</th>
+                <td>hyd</td>
+              </tr>
+              <tr>
+                <td>${KlasNaam}</th>
+                <td>5H2</td>
+              </tr>
+              <tr>
+                <td>${Informatie}</th>
+                <td>Proefwerk</td>
+              </tr>
+              <tr>
+                <td>${LesNummer}</th>
+                <td>3</td>
+              </tr>
+              <tr>
+                <td>${isAfgerond}</th>
+                <td>true</td>
+              </tr>
+              <tr>
+                <td>${RoepNaam}</th>
+                <td>Tim</td>
+              </tr>
+            </tbody>
+          </table>
+          Een voorbeeld is bijvoorbeeld: <br><code>#${LesNummer} ${Vaknaam} in ${Locatie} van ${Docent} (${DocentKort})</code> <br>wat in dit geval zou uitkomen tot: <br><code>#3 Duits in 102 van Heydrich (hyd)</code>.
+          <div class="input-group mt-2">
+            <span class="input-group-text material-symbols-outlined" id="basic-addon1">edit_calendar</span>
+            <input type="text" class="form-control" id="evenementtitel" placeholder="#${LesNummer} ${Vaknaam} in ${Locatie} van ${Docent} (${DocentKort})" value="${Vaknaam}" aria-label="evenementtitel" aria-describedby="basic-addon2">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="headingFive">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
+          Verander zichtbaarheid van verschillende type evenementen
+        </button>
+      </h2>
+      <div id="collapseFive" class="accordion-collapse collapse" aria-labelledby="headingFive" data-bs-parent="#accordionExample">
+        <div class="accordion-body">
+          <div class="form-check form-switch">
+            <input class="form-check-input" checked type="checkbox" role="switch" id="ShowHuiswerk">
+            <label class="form-check-label" for="ShowHuiswerk">Toon uren met huiswerk op de kalender.</label>
+          </div>
+          <div class="form-check form-switch">
+            <input class="form-check-input" checked type="checkbox" role="switch" id="ShowToetsen">
+            <label class="form-check-label" for="ShowToetsen">toon uren met toetsen op de kalender.</label>
+          </div>
+          <div class="form-check form-switch">
+            <input class="form-check-input" checked type="checkbox" role="switch" id="ShowAfgerond">
+            <label class="form-check-label" for="ShowAfgerond">Toon afgeronde uren op de kalender.</label>
+          </div>
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" role="switch" id="ShowUitval">
+            <label class="form-check-label" for="ShowUitval">Toon uitgevallen uren op de kalender.</label>
+          </div>
+          <div class="form-check form-switch">
+            <input class="form-check-input" checked type="checkbox" role="switch" id="ShowEvents">
+            <label class="form-check-label" for="ShowEvents">Toon uren zonder huiswerk of toetsen op de kalender.</label>
+          </div>
+          <div class="form-check form-switch">
+            <input class="form-check-input" checked type="checkbox" role="switch" id="ShowOpdrachten">
+            <label class="form-check-label" for="ShowOpdrachten">Laat inleverdatum van opdrachten zien op de kalender.</label>
+          </div>
+          <div class="form-check form-switch">
+            <input class="form-check-input" checked type="checkbox" role="switch" id="ShowAbsenties">
+            <label class="form-check-label" for="ShowAbsenties">Toon absenties in de descriptie van een evenement.</label>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="headingSeven">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSeven" aria-expanded="false" aria-controls="collapseSeven">
+          Geavanceerde opties
+        </button>
+      </h2>
+      <div id="collapseSeven" class="accordion-collapse collapse" aria-labelledby="headingSeven" data-bs-parent="#accordionExample">
+        <div class="accordion-body">
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" role="switch" id="AfrondenLink">
+            <label class="form-check-label" for="AfrondenLink">Voeg link om huiswerk/toetsen af te ronden toe aan de descriptie.</label>
+          </div>
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" role="switch" id="Laatparssonlijkeaanpassingsknopzien">
+            <label class="form-check-label" for="Laatparssonlijkeaanpassingsknopzien">Voeg link om persoonlijke aanpassingen te maken toe aan de descriptie.</label>
+          </div>
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" role="switch" id="InHTMLFormaat">
+            <label class="form-check-label" for="InHTMLFormaat">Gebruik HTML in de descriptie. <span class="badge rounded-pill bg-warning">Niet aanbevolen</span></label>
+          </div>
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" role="switch" id="Toetsvooruitblik">
+            <label class="form-check-label" for="Toetsvooruitblik">Plan toetsen die je vier weken na het eind van je ingeplande rooster hebt van tevoren in.</label>
+          </div>
+          <div class="form-check form-switch">
+            <input class="form-check-input" checked type="checkbox" role="switch" id="SkipEmpty">
+            <label class="form-check-label" for="SkipEmpty">Sla lege weken over en voeg de eerst volgende niet lege week toe.</label>
+          </div>
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" role="switch" id="ShowAanpassing">
+            <label class="form-check-label" for="ShowAanpassing">Sta het maken van persoonlijke aanpassingen toe. <span class="badge rounded-pill bg-primary">Beta</span></label>
+          </div>
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" role="switch" id="ShowUitvalMetcancelled" disabled>
+            <label class="form-check-label" for="ShowUitvalMetcancelled">laat vervallen uren zien, maar geef aan de ze gecancelled zijn. (Ze zullen dan niet in Google calendar te zien zijn)</label>
+          </div>
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" role="switch" id="ReadalbeCal">
+            <label class="form-check-label" for="ReadalbeCal">Maak iCalendar leesbaarder door spaties in te voegen. <span class="badge rounded-pill bg-warning">Niet aanbevolen</span></label>
+          </div>
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" role="switch" id="getemail">
+            <label class="form-check-label" for="getemail">Stuur Magister berichten door naar email. <span class="badge rounded-pill bg-danger">Niet aanbevolen</span> <span class="badge rounded-pill bg-primary">Beta</span></label>
+          </div>
+          <hr />
+          <div class="input-group mb-2 mt-2">
+            <span class="input-group-text material-symbols-outlined" id="basic-addon1">notification_add</span>
+            <input type="number" class="form-control" id="AddReminderTime" placeholder="Voeg een herinnering toe (min)" value="" aria-label="AddReminderTime" aria-describedby="basic-addon2">
+            <button class="btn btn-outline-secondary" onclick="AddToReminders()" type="button" id="button-addonreminders"><span class="material-symbols-outlined">add</span></button>
+          </div>
+          <ul class="list-group mt-2" id="RemindersList">
+
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer class="mb-3" style="opacity: 0.6;">
+    <center>
+      <p>Magister naar iCalendar is niet verbonden met, of onderdeel van Iddink Group.</p>
+    </center>
+  </footer>
+</body>
+
+</html>
+<style>
+  body {
+    background-color: white;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    body {
+      background-color: black;
+    }
+  }
+
+  body div {
+    max-width: 700px;
+    left: 50%;
+    position: relative;
+    margin: 0px 0px;
+    transform: translateX(calc(-50% - 0px));
+  }
+
+  .material-symbols-outlined {
+    vertical-align: middle;
+  }
+</style>
