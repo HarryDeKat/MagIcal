@@ -21,7 +21,6 @@ module.exports = async function () {
         var opdrachten = ''
         var absenties = ''
         if (querys.ShowUitval == 'true') { var ShowUitval = '' } else { var ShowUitval = '&status=1' }
-        
         //Get data from Magister
         var unfilteredcaldata = await this.FetchFromMagister('/api/personen/' + AccountRes.data.Persoon.Id + '/afspraken?tot=' + lastday + ShowUitval + '&van=' + firstday, tokenSet, tenant, null, null, 'get');
 
@@ -119,7 +118,7 @@ module.exports = async function () {
             if (querys.ShowEvents == 'false' && !inRange(calevent.InfoType, 1 ,5)) {return;}
             if (querys.ShowToetsen == 'false' && inRange(calevent.InfoType, 2 ,5)) {return;}
             if (querys.ShowHuiswerk == 'false' && calevent.InfoType == 1) {return;}
-            if (calevent.Vakken.length == 0) { return; }
+            if (calevent.Vakken.length == 0) { calevent.Vakken.push({"Naam": calevent.Omschrijving.split(" - ")[0]}); }
             
             //Settings default var's 
             var Status = 'CONFIRMED';
