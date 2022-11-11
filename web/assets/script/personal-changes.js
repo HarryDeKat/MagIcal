@@ -1,3 +1,11 @@
+Date.prototype.getWeekNumber = function(){
+    var d = new Date(Date.UTC(this.getFullYear(), this.getMonth(), this.getDate()));
+    var dayNum = d.getUTCDay() || 7;
+    d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+    var yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
+    return Math.ceil((((d - yearStart) / 86400000) + 1)/7)
+  };
+
 if (new URLSearchParams(window.location.search).has('auth')) { document.getElementById('authtoken').value = new URLSearchParams(window.location.search).get('auth'); document.getElementById('authtoken').disabled = true; }
 if (new URLSearchParams(window.location.search).has('evId')) { document.getElementById('EvenementID').value = new URLSearchParams(window.location.search).get('evId'); document.getElementById('EvenementID').disabled = true; }
 if (new URLSearchParams(window.location.search).has('datum') && new URLSearchParams(window.location.search).get('datum') != '') {
@@ -22,8 +30,8 @@ const editable = document.getElementById('Inhoud')
 editable.addEventListener('keydown', e => {
     if (editable.innerText === '\n') editable.innerHTML = ''
 })
-document.getElementById('weeknumber').innerHTML = getNumberOfWeek(new Date(document.getElementById('datepicker').value))
-document.getElementById('datepicker').addEventListener('change', e => { document.getElementById('weeknumber').innerHTML = getNumberOfWeek(new Date(document.getElementById('datepicker').value)) })
+document.getElementById('weeknumber').innerHTML = new Date(document.getElementById('datepicker').value).getWeekNumber()
+document.getElementById('datepicker').addEventListener('change', e => { document.getElementById('weeknumber').innerHTML = new Date(document.getElementById('datepicker').value).getWeekNumber() })
 async function Verander() {
     if (document.getElementById('InfoType').value != '') { var setInfoType = document.getElementById('InfoType').value } else { setInfoType = null }
     if (document.getElementById('Status').value != '') { var setStatus = document.getElementById('Status').value } else { setStatus = null }
@@ -124,11 +132,7 @@ async function GetAndListEvents(date, id) {
     });
     return end;
 }
-function getNumberOfWeek(today) {
-    const firstDayOfYear = new Date(today.getFullYear(), 0, 1);
-    const pastDaysOfYear = (today - firstDayOfYear) / 86400000;
-    return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
-}
+
 function SelectDate(id) {
     document.getElementById('EvenementID').disabled = false;
     var childerenofdatelist = document.getElementById('datelist').children
