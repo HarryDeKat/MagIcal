@@ -28,7 +28,7 @@ module.exports = async function () {
             var res = await axios(url);
             if (res.status === 200) {
                 var js = await res.data;
-                var tokens = JSON.parse(js.match(/\["[\d\w]*","[\d\w]*","[\d\w]*","[\d\w]*"\]/)[0]);
+                var tokens = JSON.parse(js.match(/\["[\d\w]*","[\d\w]*","[\d\w]*","[\d\w]*"\]/gm).reverse()[0]);
                 var which = JSON.parse(js.match(/\["\d","\d"\]/));
                 return which.map(g => tokens[parseInt(g)]).join("");
             }
