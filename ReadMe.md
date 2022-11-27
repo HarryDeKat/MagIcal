@@ -1,4 +1,10 @@
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FHarryDeKat%2FmagIcal%2F&env=privateKey,publicKey&envDescription=Lees%20de%20readme%20op%20github%20voor%20meer%20informatie&project-name=magister-naar-ical&repo-name=magIcal)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FHarryDeKat%2FmagIcal%2F&env=privateKey,publicKey&envDescription=Lees%20de%20readme%20op%20github%20voor%20meer%20informatie!!!&project-name=magister-naar-ical&repo-name=magIcal)
+
+Dit is een klein hobby project, dus niet alles is goed georganiseerd. Sorry hiervoor. 
+
+Gebruik voor de private en public key een **4096bit** RSA key. Deze keys zijn [hier](https://travistidwell.com/jsencrypt/demo/) te genereren.
+
+---
 
 Wat is dit?
 -----------
@@ -67,9 +73,4 @@ Nee, deze applicatie slaat bij normale instellingen geen gegevens op buiten de s
 
 ---
 
-Dit is een klein hobby project, dus niet alles is goed georganiseerd. Sorry hiervoor. 
-
-Gebruik voor de private en public key een 4096bit RSA key. Deze keys zijn [hier](https://travistidwell.com/jsencrypt/demo/) te genereren.
-
----
 Magister naar iCalendar is niet verbonden met, of onderdeel van Iddink Group.

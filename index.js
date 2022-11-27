@@ -23,9 +23,9 @@ app.get('/ical', async (req, res) => {
     if (!req.query || !req.query.auth || !req.query.extrawekenvooruit || !req.query.extrawekenterug)
       return res.send(ErrorMessage("incorrect query's"))
 
-    //Getting Data
-    const auth = JSON.parse(decrypt(atob(req.query.auth)))
-    const Bearer = await GetBearer(auth.username, auth.password, auth.tenant).catch((e) => { res.status(401).send(ErrorMessage("An error occurred")) });
+    //Getting Data 
+    const auth = JSON.parse(decrypt(atob(req.query.auth)));
+    const Bearer = await GetBearer(auth.username, auth.password, auth.tenant).catch((e) => { res.status(401).send(ErrorMessage("Inloggen mislukt. Controleer of je de juiste inloggegevens hebt ingevuld.", e)) });
     const AccountRes = await GetUserDetails(Bearer, auth.tenant);
     const Afspraken = await GetAfspraken(AccountRes, Bearer, req.query, auth.tenant);
     const waitformail = await CheckandSendMail(req.query.auth, auth.getemail).catch((e) => { })
@@ -39,7 +39,7 @@ app.get('/ical', async (req, res) => {
     res.send(CreateICal(Afspraken, AccountRes.data, req.query, auth.AfrondenLink));
   } catch (e) {
     console.log(e)
-    if (!res.headersSent) { res.status(500).send(ErrorMessage("An error occurred")) };
+    if (!res.headersSent) { res.status(500).send(ErrorMessage("An error occurred", e)) };
   }
 })
 
@@ -47,7 +47,7 @@ app.get('/Aanpassen', async (req, res) => {
   try {
     if (req.query && req.query.auth && !req.query.frontend && (JSON.parse(decrypt(atob(req.query.auth)))).ShowAanpassing == true) {
       var auth = JSON.parse(decrypt(atob(req.query.auth)))
-      const Bearer = await GetBearer(auth.username, auth.password, auth.tenant).catch((e) => { res.status(401).send(ErrorMessage("An error occurred")) });
+      const Bearer = await GetBearer(auth.username, auth.password, auth.tenant).catch((e) => { res.status(401).send(ErrorMessage("An error occurred"), e) });
       if (req.query.date) {
         var AccountRes = await GetUserDetails(Bearer, auth.tenant);
         res.send((await AanpassingGetToday(AccountRes, Bearer, auth.tenant, req.query.date)).data);
@@ -60,23 +60,23 @@ app.get('/Aanpassen', async (req, res) => {
     } else {
       res.sendFile(path.join(__dirname, 'web/personal-changes.html'));
     }
-  } catch (e) { res.send(ErrorMessage("An error occurred")) }
+  } catch (e) { res.send(ErrorMessage("An error occurred"), e) }
 });
 
 app.get('/Afronden', async (req, res) => {
   try {
     if (req.query && req.query.auth && !req.query.frontend && req.query.evId) {
       var auth = JSON.parse(decrypt(atob(req.query.auth)))
-      const Bearer = await GetBearer(auth.username, auth.password, auth.tenant).catch((e) => { res.status(401).send(ErrorMessage("An error occurred")) });
+      const Bearer = await GetBearer(auth.username, auth.password, auth.tenant).catch((e) => { res.status(401).send(ErrorMessage("An error occurred"), e) });
       var AccountRes = await GetUserDetails(Bearer, auth.tenant);
-      await Afronden(tokenSet, AccountRes, req.query.evId, auth.tenant);
-      res.sendFile(path.join(__dirname, 'web/done.html'));
+      await Afronden(Bearer, AccountRes, req.query.evId, auth.tenant);
+      res.sendFile(path.join(__dirname, 'web/confirmation.html'));
     } else if (req.query && req.query.auth && req.query.evId) {
       res.send(AfrondenHTML(req.query));
     } else {
-      res.send(ErrorMessage("incorrect query's"))
+      res.status(500).send(ErrorMessage("incorrect query's"))
     }
-  } catch (e) { res.send(ErrorMessage("An error occurred")) }
+  } catch (e) { res.status(500).send(ErrorMessage("An error occurred"), e) }
 });
 
 app.use(function(req,res){
