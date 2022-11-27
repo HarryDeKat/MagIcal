@@ -2,7 +2,7 @@
 
 Dit is een klein hobby project, dus niet alles is goed georganiseerd. Sorry hiervoor. 
 
-Gebruik voor de private en public key een **4096bit** RSA key. Deze keys zijn [hier](https://travistidwell.com/jsencrypt/demo/) te genereren.
+Gebruik voor de private en public key een **4096bit** RSA key. Deze keys zijn [hier](https://jsfiddle.net/0xmg4ht1/3/show) of [hier](https://travistidwell.com/jsencrypt/demo/) te genereren.
 
 ---
 
