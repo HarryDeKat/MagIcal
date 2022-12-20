@@ -16,7 +16,7 @@ module.exports = async function () {
         const extraaantalwekenterug = querys.extrawekenterug;
         const extraaantalwekenvooruit = querys.extrawekenvooruit;
         var lastday = new Date(addWeeks(new Date().setDate(last), extraaantalwekenvooruit)).toISOString().slice(0, 10);
-        const unmodlastday = lastday; var lastday = new Date(addWeeks(new Date().setDate(last), extraaantalwekenvooruit + 4)).toISOString().slice(0, 10);
+        var unmodlastday = lastday; var lastday = new Date(addWeeks(new Date().setDate(last), extraaantalwekenvooruit + 4)).toISOString().slice(0, 10);
         const firstday = new Date(addWeeks(new Date().setDate(first), extraaantalwekenterug * -1)).toISOString().slice(0, 10);
         var opdrachten = ''
         var absenties = ''
