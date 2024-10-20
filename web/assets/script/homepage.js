@@ -71,6 +71,7 @@ async function CreateLink() {
         "&SkipEmpty=" + document.getElementById('SkipEmpty').checked +
         "&ShowUitval=" + document.getElementById('ShowUitval').checked +
         "&ShowPersonalChanges=" + document.getElementById('Laatparssonlijkeaanpassingsknopzien').checked +
+        "&ShowDiscipulusLink=" + document.getElementById('discipulusdeeplink').checked +
         "&ShowUitvalMetcancelled=" + document.getElementById('ShowUitvalMetcancelled').checked +
         "&Toetsvooruitblik=" + document.getElementById('Toetsvooruitblik').checked +
         "&Herinneringen=" + btoa(reminders) +
