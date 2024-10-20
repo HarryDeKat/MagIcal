@@ -1,10 +1,19 @@
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FHarryDeKat%2FMagIcal&env=privateKey,publicKey&envDescription=Deze%20zijn%20keys%20zijn%20nodig%20om%20je%20Magister%20inlog%20gegevens%20veilig%20op%20te%20slaan%20zonder%20dat%20iemand%20anders%20kan%20zien%20wat%20je%20wachtwoord%20is.%20Meer%20informatie%20over%20hoe%20je%20deze%20kan%20genereren%20is%20hiernaast%20of%20in%20de%20readme%20te%20vinden.&envLink=https%3A%2F%2Fgithub.com%2FHarryDeKat%2FMagIcal%23readme&project-name=magical&repository-name=MagIcal&demo-title=Magister%20%E2%86%92%20iCalendar&demo-description=Zet%20je%20Magister%20rooster%20om%20in%20een%20iCalender&demo-url=https%3A%2F%2Fmagister-naar-icalendar.vercel.app&demo-image=https%3A%2F%2Fi.imgur.com%2FcdQPHSx.png)
 
-Dit is een klein hobby project, dus niet alles is goed georganiseerd. Sorry hiervoor. 
+Dit was een van mijn eerste projecten, dus de code is niet bepaald een toonbeeld van organisatie. 😅
 
-Gebruik voor de private en public key een **4096bit** RSA key. Deze keys zijn [hier](https://jsfiddle.net/0xmg4ht1/3/show) of [hier](https://travistidwell.com/jsencrypt/demo/) te genereren.
+Belangrijke opmerkingen:
 
----
+- Dit systeem werkt mogelijk niet met alle Magister accounts.
+- Accounts die **niet** het standaard Magister inlogsysteem gebruiken (dus geen OAuth) worden **niet** ondersteund.
+- Accounts met **tweefactorauthenticatie (2FA)** worden **niet** ondersteund.
+
+Hoewel de code wat rommelig is, functioneert het systeem naar mijn ervaring prima. Ik heb het zelf jarenlang zonder problemen gebruikt.
+
+## Waar haal ik die RSA-keys vandaan?
+Gebruik voor de private en public key een **4096bit** RSA key. Deze keys zijn [hier](https://cryptotools.net/rsagen) te genereren.
+
+
 
 Wat is dit?
 -----------

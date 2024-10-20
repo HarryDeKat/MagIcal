@@ -127,6 +127,7 @@ module.exports = async function () {
             var kortlocatie = calevent.Lokatie
             var informatie = '';
             var aanpassinglink = ''
+            var discipulusdeeplink = ''
             var algemaakteaanpassing = ''
             var reminders = [30]
 
@@ -153,7 +154,8 @@ module.exports = async function () {
             if (calevent.Docenten.length == 0) { calevent.Docenten.push({ "Naam": '???', "Docentcode": '???' }) }
             if (calevent.Status == 4 || calevent.Status == 5) { if (querys.ShowUitvalMetcancelled == 'true') { Status = 'CANCELLED' } impinfo += 'Vervallen - '; }
             if (AfrondenLink == true) { var link = 'https://'+mydomain+'/Afronden?auth=' + querys.auth + '&frontend=true&evId=' + calevent.Id } else { var link = '' }
-            if (querys.ShowPersonalChanges == 'true') {aanpassinglink = '<a href="https://'+mydomain+'/Aanpassen?datum='+ new Date(calevent.Start).toISOString().slice(0, 10) +'&auth='+ querys.auth + '&frontend=true&evId=' + calevent.Id + algemaakteaanpassing + '">Aanpassen</a> - '}
+            if (querys.ShowPersonalChanges == 'true') {aanpassinglink = '<a href="https://'+mydomain+'/Aanpassen?datum='+ new Date(calevent.Start).toISOString().slice(0, 10) +'&auth='+ querys.auth + '&frontend=true&evId=' + calevent.Id + algemaakteaanpassing + '">Aanpassen</a>'}
+            if (querys.ShowDiscipulusLink == 'true') {discipulusdeeplink = '<a href="discipulus://calendar?eventId=' + calevent.Id + '&profileId='+ userinfo.Persoon.Id + '">Discipulus</a>'}
             switch (calevent.InfoType) {
                 case 2: impinfo += 'Proefwerk - '; break;
                 case 3: impinfo += 'Tentamen - '; break;
@@ -173,13 +175,14 @@ module.exports = async function () {
                 .replaceAll('${isAfgerond}', calevent.Afgerond);
 
             //Checking if desc whoud be in HTML format or in plain text
+            var extraLinks = [aanpassinglink, discipulusdeeplink].filter(x => x !== "").join(" - ")
             if (querys.InHTMLFormaat == 'true') {
                 if (calevent.Inhoud != null && AfrondenLink == true) {
                     var AfrondenButtontext = (calevent.Afgerond == false) ? 'Afronden' : 'Ongedaan maken'
-                    informatie = '<a href="' + link + '">' + AfrondenButtontext + '</a> - '+aanpassinglink+'<b>Informatie:</b><br><br>' + calevent.Inhoud.replaceAll(/\n/g, "<br>");
+                    informatie = '<a href="' + link + '">' + AfrondenButtontext + '</a> - '+extraLinks+' - <b>Informatie:</b><br><br>' + calevent.Inhoud.replaceAll(/\n/g, "<br>");
                 } else if (calevent.Inhoud != null) {
-                    informatie = aanpassinglink + '<b>Informatie:</b><br><br>' + calevent.Inhoud.replaceAll(/\n/g, "<br>");
-                } else {informatie = aanpassinglink.slice(0, -3);}
+                    informatie = extraLinks + ' - <b>Informatie:</b><br><br>' + calevent.Inhoud.replaceAll(/\n/g, "<br>");
+                } else {informatie = extraLinks;}
                 var desc = impinfo.replaceAll(/\n/g, '<br>') + calevent.Vakken.map(u => u.Naam.charAt(0).toUpperCase() + u.Naam.slice(1)).join(', ').replace(/, ([^,]*)$/, ' and $1') + ' van ' + calevent.Docenten.map(u => u.Naam + " (" + u.Docentcode + ")").join(', ').replace(/, ([^,]*)$/, ' en $1')+ " " + locatie + '<br>' + informatie;
             } else {
                 if (calevent.Inhoud != null) { informatie = "\nInformatie:\n\n" + convert(calevent.Inhoud, { hideLinkHrefIfSameAsText: true, singleNewLineParagraphs: [{ selector: 'p', options: { leadingLineBreaks: 1, trailingLineBreaks: 1 } }]}) } else { informatie = '' };
