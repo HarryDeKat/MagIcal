@@ -5,8 +5,9 @@ Dit was een van mijn eerste projecten, dus de code is niet bepaald een toonbeeld
 Belangrijke opmerkingen:
 
 - Dit systeem werkt mogelijk niet met alle Magister accounts.
-- Accounts die **niet** het standaard Magister inlogsysteem gebruiken (dus geen OAuth) worden **niet** ondersteund.
-- Accounts met **tweefactorauthenticatie (2FA)** worden **niet** ondersteund.
+- ~Accounts die **niet** het standaard Magister inlogsysteem gebruiken (dus geen OAuth) worden **niet** ondersteund.~
+- ~Accounts met **tweefactorauthenticatie (2FA)** worden **niet** ondersteund.~
+    Het is nu mogelijk om met alle magister inlog systemen te werken zolang je dan maar een key aanmaakt met [dit project](https://github.com/DiscipulusApp/magister-auth-gateway) 
 
 Hoewel de code wat rommelig is, functioneert het systeem naar mijn ervaring prima. Ik heb het zelf jarenlang zonder problemen gebruikt.
 
