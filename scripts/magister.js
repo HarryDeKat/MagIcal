@@ -9,7 +9,16 @@ module.exports = async function () {
             const authcode = await this.GetAuthCode().catch((e) => { reject(Error("An error occurred while getting authcode.")); }); //500
             const tokens = await manager.login(username, password, authcode).catch((e) => { reject(Error("An error occurred while logging in.")); }); //401
             resolve(tokens);
-          });
+        });
+    };
+
+    this.GetBearerFromKey = function (key, gatewayUrl) {
+        return {
+            access_token: key,
+            apiKey: key,
+            isGatewayKey: true,
+            gatewayUrl: gatewayUrl || process.env.GATEWAY_URL
+        };
     };
 
     this.GetAuthCode = async function () {
@@ -48,13 +57,32 @@ module.exports = async function () {
         return await this.FetchFromMagister('/api/account', tokenSet, tenant, null, null, 'get');
     };
 
-    //Gets data from Magister API
+    //Gets data from Magister API (Direct or via Gateway Proxy)
     this.FetchFromMagister = async function (path, MagisterTokens, tenant, data, body, method) {
+        if (MagisterTokens && (MagisterTokens.isGatewayKey || (MagisterTokens.access_token && MagisterTokens.access_token.startsWith('mag_sk_')) || MagisterTokens.apiKey)) {
+            const apiKey = MagisterTokens.apiKey || MagisterTokens.access_token;
+            const defaultGateway = process.env.GATEWAY_URL || 'https://discipulus.harrydekat.dev';
+            const gateway = (MagisterTokens.gatewayUrl || defaultGateway).replace(/\/+$/, '');
+            const subpath = path.startsWith('/') ? path.substring(1) : path;
+            const headers = {
+                'authorization': 'Bearer ' + apiKey,
+            };
+            if (method === 'put' || method === 'post') {
+                headers['content-type'] = 'application/json;charset=UTF-8';
+            }
+            return await axios({
+                method: method,
+                url: `${gateway}/api/proxy/${subpath}`,
+                headers: headers,
+                data: data || body,
+            });
+        }
+
         var headers = {
             "authorization": "Bearer " + MagisterTokens.access_token,
-        }
+        };
         if (method == 'put') {
-            headers["content-type"] = "application/json;charset=UTF-8"
+            headers["content-type"] = "application/json;charset=UTF-8";
         }
         return await axios({
             method: method,
@@ -66,37 +94,37 @@ module.exports = async function () {
             data: data,
             mode: 'cors',
             withCredentials: true,
-        })
+        });
     };
 
     this.MagisterinfoTypeToString = function (InfoType) {
         switch (parseInt(InfoType)) {
-            case 0:  return 'Geen'
-            case 1:  return 'Huiswerk'
-            case 2:  return 'Proefwerk'
-            case 3:  return 'Tentamen'
-            case 4:  return 'Schriftelijke overhoring'
-            case 5:  return 'Mondelinge overhoring'
-            case 6:  return 'Informatie'
-            case 7:  return 'Aantekening'
-            default: return 'Geen'
+            case 0:  return 'Geen';
+            case 1:  return 'Huiswerk';
+            case 2:  return 'Proefwerk';
+            case 3:  return 'Tentamen';
+            case 4:  return 'Schriftelijke overhoring';
+            case 5:  return 'Mondelinge overhoring';
+            case 6:  return 'Informatie';
+            case 7:  return 'Aantekening';
+            default: return 'Geen';
         }
     };
 
     this.MagisterStatusToString = function (Status) {
         switch (parseInt(Status)) {
-            case 0:  return 'Geen status'
-            case 1:  return 'Geroosterd automatisch' 
-            case 2:  return 'Geroosterd handmatig'
-            case 3:  return 'Gewijzigd'
-            case 4:  return 'Vervallen handmatig'
-            case 5:  return 'Vervallen automatisch'
-            case 6:  return 'In gebruik' 
-            case 7:  return 'Afgesloten'
-            case 8:  return 'Ingezet'
-            case 9:  return 'Verplaatst'
-            case 10: return 'Gewijzigd en verplaatst'
-            default: return 'Geen status'
+            case 0:  return 'Geen status';
+            case 1:  return 'Geroosterd automatisch';
+            case 2:  return 'Geroosterd handmatig';
+            case 3:  return 'Gewijzigd';
+            case 4:  return 'Vervallen handmatig';
+            case 5:  return 'Vervallen automatisch';
+            case 6:  return 'In gebruik';
+            case 7:  return 'Afgesloten';
+            case 8:  return 'Ingezet';
+            case 9:  return 'Verplaatst';
+            case 10: return 'Gewijzigd en verplaatst';
+            default: return 'Geen status';
         }
     };
-}
+};

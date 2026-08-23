@@ -149,7 +149,7 @@ module.exports = async function () {
             //Verious diffrent checks for title and description
             if (querys.ShowAbsenties == 'true' && caldata[2] != '' && GetAb(calevent.Id).length > 0) {try{impinfo += GetAb(calevent.Id)[0].Code + ' - ' + GetAb(calevent.Id)[0].Omschrijving + '\n'}catch {}}
             if (!querys.summaryname) { var titleorder = '${Vaknaam}' } else { var titleorder = atob(querys.summaryname) }
-            if (typeof atob(querys.Herinneringen) !== 'undefined' && atob(querys.Herinneringen).split(',').length > 0 && !isNaN(atob(querys.Herinneringen).split(',')[0])) { if (atob(querys.Herinneringen).split(',')[0] != '') {reminders = atob(querys.Herinneringen).split(',')} else {reminders = []} }
+            if (querys.Herinneringen && typeof querys.Herinneringen === 'string') { try { const decoded = atob(querys.Herinneringen); if (decoded.split(',').length > 0 && !isNaN(decoded.split(',')[0])) { reminders = decoded.split(',').filter(x => x !== ''); } else { reminders = []; } } catch (e) { reminders = []; } }
             if (calevent.IsOnlineDeelname == true) { kortlocatie = 'Online'; locatie = 'op het internet.' } else if (calevent.Lokatie == "") { kortlocatie = '???'; var locatie = "in ???." } else if (calevent.Lokalen.length > 0) {locatie = "in " + calevent.Lokalen.map(u => u.Naam).join(', ').replace(/, ([^,]*)$/, ' en $1') + "."}
             if (calevent.Docenten.length == 0) { calevent.Docenten.push({ "Naam": '???', "Docentcode": '???' }) }
             if (calevent.Status == 4 || calevent.Status == 5) { if (querys.ShowUitvalMetcancelled == 'true') { Status = 'CANCELLED' } impinfo += 'Vervallen - '; }

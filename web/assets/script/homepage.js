@@ -57,7 +57,17 @@ async function CreateLink() {
     authobj.getemail = document.getElementById('getemail').checked;
     var evtitel = ''
     if (document.getElementById('evenementtitel').value != "") { evtitel = '&summaryname=' + btoa(document.getElementById('evenementtitel').value) }
-    var link = document.location.href + "ical?auth=" + await encrypt(JSON.stringify(authobj)) +
+
+    var authparam = "";
+    var key = document.getElementById('apiKey') ? document.getElementById('apiKey').value.trim() : "";
+    var gw = document.getElementById('gatewayUrl') ? document.getElementById('gatewayUrl').value.trim() : "";
+    if (key != "") {
+        authparam = "key=" + encodeURIComponent(key) + (gw != "" ? "&gateway=" + encodeURIComponent(gw) : "");
+    } else {
+        authparam = "auth=" + await encrypt(JSON.stringify(authobj));
+    }
+
+    var link = document.location.href + "ical?" + authparam +
         "&extrawekenvooruit=" + document.getElementById('awv').value +
         "&extrawekenterug=" + document.getElementById('awa').value +
         "&InHTMLFormaat=" + document.getElementById('InHTMLFormaat').checked +
