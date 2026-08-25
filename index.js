@@ -11,7 +11,7 @@ async function resolveAuth(req) {
   let Bearer = null;
   let auth = {};
   let tenant = req.query.tenant || '';
-  const defaultGateway = process.env.GATEWAY_URL || 'https://discipulus.harrydekat.dev';
+  const defaultGateway = process.env.GATEWAY_URL || 'https://auth.harrydekat.dev';
   const gatewayUrl = req.query.gateway || defaultGateway;
 
   // 1. Direct query parameter (?key=mag_sk_... or ?apiKey=mag_sk_...)
